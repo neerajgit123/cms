@@ -46,9 +46,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
       
 class PostSerializer(serializers.ModelSerializer):
     like_count = serializers.SerializerMethodField()
+    dislike_count = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('id', 'title', 'publish', 'content', 'user', 'picture', 'description', 'creation_date', 'like_count')
+        fields = ('id', 'title', 'publish', 'content', 'user', 'picture', 'description', 'creation_date', 'like_count', 'dislike_count')
     
     def to_representation(self, instance):
         data =  super().to_representation(instance)
@@ -57,6 +58,9 @@ class PostSerializer(serializers.ModelSerializer):
     
     def get_like_count(self, obj):
         return obj.like_post.filter(is_soft_deleted=False).count()
+
+    def get_dislike_count(self, obj):
+        return obj.like_post.filter(is_soft_deleted=True).count()
     
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:

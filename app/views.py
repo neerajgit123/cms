@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_205_RESET_CONTENT, HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_205_RESET_CONTENT, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserUpdateSerializer, PostSerializer, LikeSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Like, Post
@@ -157,3 +157,16 @@ class LikeGetUpdateDeleteView(APIView):
             return Response({"data":"You dislike the post!!"}, status=HTTP_404_NOT_FOUND)
         else:
             return Response({"data":"This Like is deleted or Not belongs to you!!"}, status=HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, like_id):
+        self.permission_classes = [IsAuthenticated]
+        user = self.request.user
+        obj = Like.objects.filter(id=like_id, user=user).first()
+        if not obj:
+            return Response({"data":"This Like is deleted or Not belongs to you!!"}, status=HTTP_404_NOT_FOUND)
+        else:
+            obj.delete()
+            return Response({"data":"This Like is deleted successfully"}, status=HTTP_204_NO_CONTENT)
+            
+            
+            
